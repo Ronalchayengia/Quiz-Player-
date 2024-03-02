@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Player</title>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-iCNLXOsIynC7u5J6oj+EMHRDPLDVOsUsVGyBn70RAbkK1L0nJr8HHW4YbRRWN0r2CW0F5dCu+Lgd7rOUCGQWXw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+}
+
+.quiz-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: black;
+  border-radius: 10px;
+}
+
+.question {
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.options {
+  margin-bottom: 20px;
+}
+
+.timer-container {
+  position: absolute;
+  top: 20px;
+  left: 170px;
+}
+
+.score-container {
+  position: absolute;
+  top: 0;
+  right: 20px;
+}
+
+.timer-svg {
+  width: 60px;
+  height: 60px;
+}
+
+.timer-path {
+  fill: none;
+  stroke: #28a745;
+  stroke-width: 4;
+  stroke-dasharray: 0, 1000;
+  transition: stroke-dasharray 1s linear;
+}
+
+.timer {
+  font-size: 18px;
+  font-weight: bold;
+  color: #28a745;
+}
+
+.score {
+  font-size: 18px;
+  font-weight: bold;
+  color: #28a745;
+}
+
+.start-button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.answer {
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.question-container {
+    border-radius: 10px;
+    background-color: #f8f9fa; /* Light gray background */
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+.option {
+    border: 1px solid #dee2e6; /* Gray border */
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 5px; /* Add some space between options */
+}
+.shake-wrong {
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
+.dark-mode {
+  background-color: #333; /* Dark background color */
+  color: #fff; /* Light text color */
+}
+/* Default style for the dark mode toggle button */
+/* Default style for the dark mode toggle button */
+#darkModeButton {
+    border: none;
+    background: rgba(255, 255, 255, 0.1); /* Light transparent background */
+    cursor: pointer;
+    padding: 10px; /* Adjust padding */
+    font-size: 15px; /* Adjust the font size */
+    color: #000; /* Default color for the icon */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Increased shadow effect for depth */
+    border-radius: 50%; /* Make the button round */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for background color and shadow */
+}
+
+/* Hover effect for the dark mode toggle button */
+#darkModeButton:hover {
+    background-color: rgba(255, 255, 255, 0.2); /* Slightly lighter background color on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Adjusted shadow effect on hover */
+}
+
+/* Style for the dark mode toggle button in dark mode */
+.dark-mode #darkModeButton {
+    color: #fff; /* Color for the icon in dark mode */
+    background: rgba(0, 0, 0, 0.1); /* Dark transparent background in dark mode */
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Adjusted shadow effect for dark mode */
+}
+
+
+/* Style for the sun and moon icons */
+#darkModeIcon {
+    font-style: normal; /* Remove italic style */
+}
+
+/* Style for the sun icon */
+#darkModeIcon.fa-sun:before {
+    content: "☀️"; /* Unicode for the sun icon */
+}
+
+/* Style for the moon icon */
+#darkModeIcon.fa-moon:before {
+    content: "🌙"; /* Unicode for the moon icon */
+}
+
+/* Light mode text color */
+.btn-light {
+  color: #000; /* Black text color for light mode */
+}
+
+/* Dark mode text color */
+.btn-light-dark {
+  color: #fff; /* White text color for dark mode */
+}
+
+.dark-mode .option {
+  border-color: #666; /* Dark border color for options */
+  color: #fff; /* Light text color for options */
+}
+.dark-mode .button {
+  border-color: #666; /* Dark border color for options */
+  color: #fff; /* Light text color for options */
+}
+.dark-mode .options {
+  border-color: #666; /* Dark border color for options */
+  color: #fff; /* Light text color for options */
+}
+.dark-mode .container {
+  background-color: #222; /* Dark background color for Bootstrap container */
+}
+.dark-mode .question-container {
+  background-color: #444; /* Dark background color for question container */
+}
+
+.dark-mode .answer {
+  color: #fff; /* Light text color for answer */
+}
+
+.dark-mode .start-button {
+  background-color: #555; /* Dark background color for start button */
+}
+
+.dark-mode .timer,
+.dark-mode .score {
+  color: #28a745; /* Light color for timer and score */
+}
+
+.dark-mode .shake-wrong {
+  color: #ff6347; /* Light color for shake effect */
+}
+/* Toggle button styles */
+.btn-toggle {
+  font-size: 20px; /* Adjust the font size as needed */
+  padding: 5px; /* Adjust the padding as needed */
+}
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #f8f9fa;
+    text-align: center;
+    padding: 10px 0;
+    color: blue;
+}
+
+</style>
+</head>
+<body class="dark-mode">
+<div class="quiz-container">
+	<button id="darkModeButton" class="btn btn-primary" onclick="toggleDarkMode()">
+    <i id="darkModeIcon" class="fas fa-sun"></i>
+</button>
+<br>
+   <button id="startButton" class="btn btn-primary btn-block mb-4" onclick="startQuiz()">Start Quiz</button>
+  <div id="quizContent" style="display: none;">
+    <div class="question-container">
+      <div id="question" class="question"></div>
+      <div class="timer-container">
+        <div class="timer" id="timerText"></div>
+      </div>
+      <div class="score-container">
+        <div class="score" id="scoreText"></div>
+      </div>
+    </div>
+    <div class="question-container">
+      <div id="options" class="options"></div>
+    </div>
+    <div class="question-container">
+      <div id="answer" class="answer"></div>
+    </div>
+    <div class="question-container">
+      <button id="retryButton" class="btn btn-primary btn-block mb-4" style="display: none;">Retry Quiz</button>
+    </div>
+  </div>
+  <footer style="text-align: center; margin-top: 20px; color: white;">
+    Developed with ♥️ by Ronal
+</footer>
+
+</div>
+<script>
+let currentQuestionIndex = 0;
+let score = 0;
+let timeLeftInSeconds = 15;
+let countdown;
+let optionSelected = false; // Track if an option has been selected
+
+const startButton = document.getElementById('startButton');
+const quizContent = document.getElementById('quizContent');
+const questionElement = document.getElementById('question');
+const optionsElement = document.getElementById('options');
+const timerTextElement = document.getElementById('timerText');
+const scoreTextElement = document.getElementById('scoreText');
+const answerElement = document.getElementById('answer');
+const retryButton = document.getElementById('retryButton');
+let quizQuestions = "";
+retryButton.addEventListener('click', retryQuiz)
+darkModeButton.addEventListener('click', toggleDarkMode);
+
+const darkModeButton = document.getElementById('darkModeButton');
+const modeIcon = document.getElementById('modeIcon');
+
+function toggleDarkMode() {
+    const darkModeButton = document.getElementById('darkModeButton');
+    const darkModeIcon = document.getElementById('darkModeIcon');
+
+    // Toggle dark mode class on body
+    document.body.classList.toggle('dark-mode');
+
+    // Toggle icon based on current mode
+    if (document.body.classList.contains('dark-mode')) {
+        darkModeIcon.classList.remove('fa-sun');
+        darkModeIcon.classList.add('fa-moon');
+    } else {
+        darkModeIcon.classList.remove('fa-moon');
+        darkModeIcon.classList.add('fa-sun');
+    }
+}
+
+
+
+
+function startQuiz() {
+    quizContent.style.display = 'block';
+    // Create a file input element
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'application/json';
+    fileInput.style.display = 'none'; // Hide the file input element
+
+    
+            const json = [
+  {
+    "question": "অশ্বমেধ যজ্ঞৰ লগত জড়িত কোনজন বর্মন ৰজা সমুদ্ৰগুপ্তৰ দ্বাৰা পৰাজিত হৈছিল?",
+    "options": [
+      "পূষ্যবৰ্মন",
+      "সমুদ্ৰবৰ্মণ",
+      "ভাস্কৰবৰ্মন",
+      "বালবৰ্মন"
+    ],
+    "correctAnswer": 3
+  },
+  {
+    "question": "বর্মন বংশৰ প্রতিষ্ঠাপক কোন আছিল? বা- বর্মন বংশৰ প্রথম পৰিচিত ৰজা আছিল -",
+    "options": [
+      "পূষ্যবৰ্মন",
+      "নৰকবৰ্মন",
+      "ভাস্কৰৱৰ্মন",
+      "মহিৰঙ্গ দানৱ"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "কামৰূপ শিলালিপিত ব্যৱহৃত সাধাৰণ ভাষা কি আছিল?",
+    "options": [
+      "সংস্কৃত",
+      "বাংলা",
+      "হিন্দী",
+      "পালি"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "পূষ্যবৰ্মনে বর্মন বংশ প্ৰতিষ্ঠা কৰিছিল -",
+    "options": [
+      "৪৫০ খ্ৰীষ্টাব্দ",
+      "৩০০ খ্ৰীষ্টাব্দ",
+      "৩৫০ খ্ৰীষ্টাব্দ",
+      "৬৫০ খ্ৰীষ্টাব্দ"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "question": "বর্মন বংশৰ শাসক মহাভূতবৰ্মনক জনপ্রিয়ভাৱে জনা গৈছিল -",
+    "options": [
+      "মহেন্দ্ৰবৰ্মন",
+      "ভাস্কৰৱৰ্মন",
+      "পূষ্যবৰ্মন",
+      "ভূতিবৰ্মন"
+    ],
+    "correctAnswer": 3
+  },
+  {
+    "question": "বর্মন বংশৰ কোনজন ৰজা গুপ্ত বংশৰ সমুদ্ৰগুপ্তৰ সমসাময়িক আছিল -",
+    "options": [
+      "ভাস্কৰবৰ্মন",
+      "মহেন্দ্ৰবৰ্মান",
+      "পূষ্যবৰ্মন",
+      "বালাবৰ্মন"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "question": "তলৰ কোনজন বর্মন ৰজাই গুপ্ত সাম্ৰাজ্যক পেলাই দিবলৈ অশ্বমেধ বা অশ্বযজ্ঞ কৰিছিল?",
+    "options": [
+      "মহেন্দ্ৰবৰ্মন",
+      "ভূতিবৰ্মন",
+      "ভাস্কৰবৰ্মন",
+      "নাৰায়ণবৰ্মন"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "কামৰূপ ৰাজ্যৰ তলৰ কোনগৰাকী ৰাজকুমাৰীয়ে কাশ্মীৰৰ গোনান্দ বংশৰ ৰজা মেঘবাহনক বিয়া কৰাইছিল?",
+    "options": [
+      "অমৃতপ্ৰভা",
+      "নয়নদেৱী",
+      "ভোগৱতী",
+      "গন্ধাৰৱতী"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "কোন শতিকাত আৰম্ভ হৈছিল অসমৰ প্ৰাচীন যুগ?",
+    "options": [
+      "৩য় শতিকা",
+      "৫ম শতিকা",
+      "১ম শতিকা",
+      "চতুৰ্থ শতিকা"
+    ],
+    "correctAnswer": 3
+  },
+  {
+    "question": "অসম ইতিহাসৰ প্ৰাচীন যুগ আৰম্ভ হৈছিল চতুৰ্থ শতিকাত 'কামৰূপা'ৰ উল্লেখৰ পিছত -",
+    "options": [
+      "সমুদ্ৰগুপ্তৰ এলাহাবাদ স্তম্ভ",
+      "অশোকৰ মুদ্ৰা",
+      "সমদ্ৰগুপ্তৰ মুদ্ৰা",
+      "আকবৰৰ এলাহাবাদ দুৰ্গ"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "―হৰ্ষ চৰিত‖ জীৱনীখনৰ ৰচক কোন, য’ত বৰ্মন ৰজা মহাভুতবৰ্মনক ভূতিবৰ্মন নামেৰে নামাকৰণ কৰা হৈছে?Who is the author of the biography ―Harsha Charita‖ where the Varman King Mahabhutavarman is named as Bhutivarman?",
+    "options": [
+      "শূদ্ৰক (Shudrak)",
+      "ভাছ( Bhas)",
+      "বানভট্ট (Banabhatta)",
+      "বিশাখাদত্ত (Visakhadatta)"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "question": "হংসবেগ কোন আছিল?",
+    "options": [
+      "বৰ্মণ বংশৰ এজন কবি",
+      "এজন তীৰ্থযাত্ৰী",
+      "বৰ্মণ বংশৰ এজন ৰাষ্ট্ৰদূত",
+      "বৰ্মণ বংশৰ এজন সাহিত্যিক"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "question": "এলাহাবাদ স্তম্ভৰ শিলালিপিত মধ্য অসমৰ কথা? বা এলাহাবাদ স্তম্ভ শিলালিপিত অসমৰ কোনটো অঞ্চলৰ কথা উল্লেখ আছে?",
+    "options": [
+      "কামৰূপা",
+      "কামতাপুৰ",
+      "কোচ বিহাৰ",
+      "দৱকা"
+    ],
+    "correctAnswer": 3
+  },
+  {
+    "question": "পূৰ্বৰ বৰ্মনসকল অধীনস্থ আছিল -",
+    "options": [
+      "মোগল সাম্ৰাজ্য",
+      "গুপ্ত সাম্ৰাজ্য",
+      "মৌৰ্য সাম্ৰাজ্য",
+      "মগধ সাম্ৰাজ্য"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "প্ৰাচীন অসমৰ ঐতিহাসিক বিৱৰণী কোনটো বংশৰ প্ৰতিষ্ঠাৰ পৰাই আৰম্ভ হয়?",
+    "options": [
+      "আহোম ৰাজ্য",
+      "চেলিয়ান বংশ",
+      "সুতীয়া বংশ",
+      "বৰ্মন বংশ"
+    ],
+    "correctAnswer": 3
+  },
+  {
+    "question": "বর্মন বংশৰ চৰকাৰী ভাষা কি আছিল?",
+    "options": [
+      "ওপৰৰ কোনোটোৱেই নহয়",
+      "ৰাজবংশী আৰু নেপালী",
+      "অসমীয়া আৰু বাংলা",
+      "কামৰূপী প্ৰকৃত আৰু সংস্কৃত"
+    ],
+    "correctAnswer": 3
+  },
+  {
+    "question": "চতুৰ্থ শতিকাত কোনটো বংশই প্ৰাচীন অসমৰ আৰম্ভণি কৰিছিল?",
+    "options": [
+      "ম্লেচ্ছা বংশ",
+      "বৰ্মন বংশ",
+      "পাল বংশ",
+      "দানৱ বংশ"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "প্ৰাগজ্যোতিষ্পুৰৰ কোনজন ৰজাই সাম্ৰাজ্যবাদী নীতি গ্ৰহণ কৰিছিল?",
+    "options": [
+      "নাৰায়ণবৰ্মন",
+      "ভূতিবৰ্মন",
+      "ভাস্কৰবৰ্মন",
+      "মহেন্দ্ৰবৰ্মন"
+    ],
+    "correctAnswer": 3
+  },
+  {
+    "question": "কোনজন কামৰূপ ৰজাই হৰ্ষবৰ্ধনৰ লগত বন্ধুত্ব স্থাপন কৰিছিল?",
+    "options": [
+      "ভাস্কৰবৰ্মন",
+      "ভূতিবৰ্মান",
+      "পূষ্যবৰ্মন",
+      "বালাবৰ্মন"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "অসমৰ পৰা ‘অশ্বমেধ যজ্ঞ’ কৰা প্ৰথমজন ৰজা কোন?",
+    "options": [
+      "ভাস্কৰৱৰ্মন",
+      "ভূতিবৰ্মন",
+      "মহেন্দ্ৰবৰ্মন",
+      "পূষ্যবৰ্মন"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "question": "তলৰ কোনটো বংশ বৰ্মন বংশৰ আগৰ?",
+    "options": [
+      "কোচ বংশ",
+      "পাল বংশ",
+      "বৰ্মন বংশ",
+      "ভৌম বংশ"
+    ],
+    "correctAnswer": 3
+  },
+  {
+    "question": "কাশ্মীৰৰ ৰাজকুমাৰ মেঘবাহনৰ সৈতে বিবাহপাশত আবদ্ধ হোৱা ৰাজকুমাৰী অমৃতা প্ৰভাৰ কন্যা আছিল -",
+    "options": [
+      "কল্যাণবৰ্মন",
+      "বালবৰ্মন",
+      "ভূতিবৰ্মন",
+      "ভাস্কৰবৰ্মন"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "তলৰ কোনজন বৰ্মন ৰজাই আত্মাক আয়ত্ত কৰা আৰু পৰম আত্মাৰ দৰ্শনত সুপৰিচিত বুলি কোৱা হৈছিল?",
+    "options": [
+      "কল্যাণবৰ্মন",
+      "ভাস্কৰবৰ্মন",
+      "পূষ্যবৰ্মন",
+      "মহেন্দ্ৰবৰ্মান"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "চতুৰ্থ শতিকাৰ প্ৰায় মাজভাগ বা শেষৰ ফালে পোৱা অসমৰ আদিম ঐতিহাসিক শাসক -",
+    "options": [
+      "ভাস্কৰবৰ্মন",
+      "ভূতিবৰ্মন",
+      "সমুদ্ৰবৰ্মণ",
+      "পূষ্যবৰ্মন"
+    ],
+    "correctAnswer": 3
+  },
+  {
+    "question": "\"কুমাৰ ৰজা\" উপাধি দিয়া হৈছিল -",
+    "options": [
+      "ভাস্কৰবৰ্মন",
+      "পূষ্যবৰ্মন",
+      "ভূতিবৰ্মন",
+      "মহেন্দ্ৰবৰ্মন"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "কামৰূপ ৰাজ্যৰ বর্মন বংশৰ ৰাজধানী আছিল -",
+    "options": [
+      "চৰাইদেউ",
+      "গড়গাঁও",
+      "প্ৰাগজ্যোতিষপুৰ",
+      "ৰংপুৰ"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "question": "বর্মন বংশৰ শাসক সুস্থিতবর্মন খ্যাতি আছিল -",
+    "options": [
+      "শ্ৰী-পূষ্য",
+      "শ্ৰী-ভাস্কৰ",
+      "শ্ৰী-মৃগাংক",
+      "শ্ৰী-মহেন্দ্ৰ"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "question": "তলৰ কোনজন বর্মন ৰজা মহাৰাজধিৰাজ নামেৰেও পৰিচিত আছিল?",
+    "options": [
+      "মহেন্দ্ৰবৰ্মন",
+      "পূষ্যবৰ্মন",
+      "ভাস্কৰবৰ্মন",
+      "সমুদ্ৰবৰ্মণ"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "ভাস্কৰ বৰ্মনে হৰ্ষবৰ্ধনলৈ পঠোৱা ৰাষ্ট্ৰদূত কোন আছিল?",
+    "options": [
+      "ৰক্তিম,",
+      "হংসবেগ",
+      "নীতিপাল,",
+      "লাচিত"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "উত্তৰ ভাৰতৰ ভাস্কৰবৰ্মণৰ সমসাময়িক কোন আছিল?",
+    "options": [
+      "ধ্ৰুৱনাৰায়ণ",
+      "হৰ্ষবৰ্ধন",
+      "সমুদ্ৰগুপ্ত",
+      "গোপালা "
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "সিন্ধু  উপত্যকাৰ সভ্যতাৰ হৰপ্পা স্থানটো কেতিয়া আৱিষ্কাৰ হৈছিল:",
+    "options": [
+      "১৯০১ চনত",
+      "১৯২১ চনত",
+      "১৯৩৫ চনত",
+      "১৯৪২ চনত"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "কামৰূপ ৰাজ্যৰ নিম্নলিখিত কোনগৰাকী ৰাজকুমাৰী কাশ্মীৰৰ ৰজা মেঘবাহন বিয়া কৰাইছিল?",
+    "options": [
+      "ভাগৱতী",
+      "Gandharavati",
+      "আমৃতপ্ৰভা",
+      "Nayanadevi"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "হিউৱেন চাঙৰ বিৱৰণ অনুসৰি বংগোপসাগৰৰ কোনটো বিখ্যাত বন্দৰ ভাস্কৰবৰ্মনৰ নিয়ন্ত্ৰণত আছিল?",
+    "options": [
+      "Tamralipti",
+      "Dhaka",
+      "Visakhapatnam",
+      "Chittagaon (Chattagram)"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "হিউৱেন চাঙে বৰ্মন ৰাজবংশৰ শাসকসকলক ___ হিচাপে মনোনীত কৰিছিল।",
+    "options": [
+      "Brahmin",
+      "Karbi",
+      "Tai-ahom",
+      "Koch"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "সিন্ধু উপ্যকা সভ্যতাৰ আৱিষ্কাৰৰ সৈতে জড়িত দুজন ভাৰতীয় হল-",
+    "options": [
+      "Rakhal Das Banerjee and Dayaram Sahni",
+      "Jhon Marshall and Ishwari Prasad",
+      "Ashirwadi Lal Srivastava and Rangnath Rao",
+      "Madhosarup Vats and V.B. Rao"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "কুৰুক্ষেত্ৰত যুদ্ধত (মহাভাৰত যুদ্ধ) কোন জন কামৰূপৰ ৰজাই অংশগ্ৰহণ কৰিছিল?",
+    "options": [
+      "Naraka",
+      "ভগদত্ত",
+      "ভাস্কবৰ্মন",
+      "ভাজ্ৰদত্ত"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "সিন্ধু উপত্যকাত খনন কৰা তলত উল্লেখ কৰা অৱশিষ্টসমূহৰ ভিতৰত কোনোটোৱে বাণিজ্যিক আৰু অৰ্থনৈতিক বিকাশৰ ইংগিত দিয়ে?",
+    "options": [
+      "Pottery",
+      "Seals",
+      "Boats",
+      "Houses"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "সিন্ধু উপত্যকা সভ্যতাৰ জনসাধাৰণে পূজা কৰিছিল-",
+    "options": [
+      "বিষ্ণু",
+      "পশুপতি",
+      "ইন্দ্ৰ",
+      "ব্ৰহ্ম"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "নিম্নলিখিত কোন প্ৰাচীন প্ৰাগজ্যোতিষৰ আটাইতকৈ শক্তশালী ৰজা আছিল?",
+    "options": [
+      "Hatakasura",
+      "Sambarasura",
+      "Ratnasura",
+      "Narakasura"
+    ],
+    "correctAnswer": 3
+  },
+  {
+    "question": "নিম্নলিখিত কোন বৰ্মন ৰজাক মহাৰাজাধিৰাজ বুলিও জনা গৈছিল?",
+    "options": [
+      "পুষ্যবৰ্মন",
+      "মহেন্দ্ৰবৰ্মন",
+      "ভাস্কবৰ্মন",
+      "সমুদ্ৰবৰ্মন"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "নিম্নলখিত কোনটোক মধ্যযুগীয় অসম ইতিহাসৰ সমাপ্তিৰ চিহ্ন হিচাপে গণ্য কৰা হয়?",
+    "options": [
+      "The Treaty of Yondabo",
+      "The Treaty of Burmese",
+      "The Treaty of Anglo-Burmese",
+      "The Treaty of Myanmar"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "১৮২৮ চনত কছাৰী ৰাজ্যক নিম্নলিখিত কোনটো মতবাদৰ অধীনত ব্ৰিটিছ শাসনৰ অন্তৰ্ভুক্ত কৰা হৈছ?",
+    "options": [
+      "Doctrine of Lapse",
+      "Doctrine of Administrative law",
+      "Doctrine of Laches",
+      "None of these"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "অসমত ১৮৫৭ চনৰ বিদ্ৰোহৰ নেতা কোন আছিল?",
+    "options": [
+      "লাচিত বৰফুকন",
+      "পিয়লি ফুকন",
+      "মণিৰাম দেৱান",
+      "কনকলতা"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "question": "আহোম - মোগলৰ সংঘাত কাৰ শাসনকালত আৰম্ভ হৈছিল?",
+    "options": [
+      "গদাধৰ সিংহ",
+      "প্ৰতাপ সিংহ",
+      "শিৱ সিংহ",
+      "ৰামধ্বাজ সিংহ"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "___ আহোম ৰজাক 'গড়গয়া ৰজা' বুলি কোৱা হয়।",
+    "options": [
+      "Suklenmung",
+      "Pratap Singha",
+      "Sukhaamphaa",
+      "Suhungmung"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "বেলিমাৰ বুৰঞ্জী নামৰ কিতাপখনৰ লেখক কোন আছিল?",
+    "options": [
+      "লাচিত চন্দ্ৰ গোস্বামী",
+      "দুতিৰাম হাজৰিকা",
+      "Srinagar Duara",
+      "Bisweswar Baidydhioa"
+    ],
+    "correctAnswer": 3
+  },
+  {
+    "question": "ভাৰতৰ সংগীত নাটক অকাডেমীয়ে সত্ৰীয়া নৃত্যক কোন চনত শাস্ত্ৰীয় নৃত্য হিচাপে স্বীকৃতি দিছিল:",
+    "options": [
+      "১৯৯৯ চনত",
+      "২০০১ চনত",
+      "২০০২ চনত",
+      "২০০০ চনত"
+    ],
+    "correctAnswer": 3
+  },
+  {
+    "question": "'ইয়াত এখন অৰণ্য আছিল' নামৰ কিতাপখনৰ বাবে কোনে সাহিত্য একাডেমী বঁটা লাভ কৰিছিল?",
+    "options": [
+      "ৰীতা চৌধুৰী",
+      "অনুৰাধা শৰ্মা পূজাৰী",
+      "নীলমণি ফুকন",
+      "নীলিম কুমাৰ"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "______ চনত 'হেমকোষ' প্ৰথম প্ৰকাশিত হৈছিল।",
+    "options": [
+      "১৯০০ চনত",
+      "১৯০৭ চনত",
+      "১৮৮৮ চনত",
+      "১৯০২ চনত"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "আৰম্ভণিতে কিমানটা মৌলিক অধিকাৰ প্ৰদান কৰা হৈছিল?",
+    "options": [
+      "৬ টা",
+      "৭ টা",
+      "৪ টা",
+      "৫ টা"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "নিম্নলখিত কোন জন সংবিধান সভাৰ সদস্য নাছিল?",
+    "options": [
+      "Dr. ৰাজেন্দ্ৰ প্ৰসাদ",
+      "K. M. মুন্সী",
+      "মহাত্মা গান্ধী",
+      "আবুল কালাম আজাদ"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "question": "১৯৩৫ অল ইণ্ডিয়া ৰেডিঅ'ত সম্প্ৰচাৰিত হোৱা প্ৰথম খন অসমীয়া নাটক আছিল:",
+    "options": [
+      "লাহৰী",
+      "বিন বৈৰাগী",
+      "বন কুঁৱৰী",
+      "জীৱনৰ বাটত"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "ভাৰতীয় জাতীয় কংগ্ৰেছৰ কোন খন অধিৱেশনত মহাত্মা গান্ধীয়ে অসম ভ্ৰমণ কৰিছিল?",
+    "options": [
+      "পাণ্ডু অধিৱেশন",
+      "গুৱাহাটী অধিৱেশন",
+      "লখিমপুৰ অধিৱেশন",
+      "যোৰহাট অধিৱেশন"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "১৮২৮ চনত অসমত ব্ৰিটিছ শাসনৰ বিৰুদ্ধে প্ৰথম বিদ্ৰোহৰ নেতৃত্ব দিছিল:",
+    "options": [
+      "পিয়লি ফুকন",
+      "মণিৰাম দেৱান",
+      "গোমধৰ কোঁৱৰ",
+      "পিয়লি বৰুৱা"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "question": "১৬৭১ খ্ৰীষ্টাব্দত শৰাইঘাটৰ মহাযুদ্ধৰ সময়ত আহোমৰ ৰজা ____ আছিল।",
+    "options": [
+      "চক্ৰধ্বজ সিংহ",
+      "উদয়াদিত্য সিংহ Udayaditya Singha",
+      "ৰত্নধ্বাজ সিংহ",
+      "প্ৰতাপ সিংহ"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "_____ অসম ৰাইফলছ স্থাপন কৰা হৈছিল।",
+    "options": [
+      "১৮৩৫ চনত",
+      "১৯৩৫ চনত",
+      "১৯৩০ চনত",
+      "১৮৩০ চনত"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "ভাৰতৰ সংবিধানে ইয়াৰ চূড়ান্ত কৰ্তৃত্ব প্ৰাপ্ত কৰিছে-",
+    "options": [
+      "Supreme Court of India",
+      "Parliament of India",
+      "People of India",
+      "Constituent Assembly of India"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "question": "সংবিধান প্ৰস্তাৱনাত ভাৰতক কি হিচাপে ঘোষণা কৰা হৈছে:",
+    "options": [
+      "Sovereign Democratic Republic",
+      "Sovereign Socialist Secular Democratic Republic",
+      "Sovereign Republic",
+      "Sovereign Socialist Democratic Republic"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "ৰাজতৰংগিনীৰ ৰচক কোন?ক) কৌটিল্য  খ) কলহন   গ) বানভট্ট   ঘ) চৰক",
+    "options": [
+      "ক",
+      "খ",
+      "গ",
+      "ঘ"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "বিশাখাদত্ত ৰচিত নাটকখন কি?ক) ৰঘুবংশ   খ) কুমাৰ হৰণ   গ) মুদ্ৰাৰাক্ষস   ঘ) মেঘদূত",
+    "options": [
+      "ক",
+      "খ",
+      "গ",
+      "ঘ"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "question": "স্বাধীনতাৰ সময়ত অসম পুলিচৰ সংখ্যা কিমান আছিল?ক) প্ৰায় ৮০০০  খ) প্ৰায় ১০,০০০  গ) ১৫,০০০  ঘ) ১,০০,০০০",
+    "options": [
+      "ক",
+      "খ",
+      "গ",
+      "ঘ"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "ভাৰতীয় সংবিধানৰ ১১ তম অনুসূচীটো কিহৰ লগত জড়িত?",
+    "options": [
+      "Municipalities",
+      "Panchayats",
+      "Anti Defection Law",
+      "Land Acquisition"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "বিজ্ঞানৰ জনপ্ৰিয়তাৰ বাবে প্ৰতি বছৰে কলিংগ পুৰস্কাৰ কৰা দ্বাৰা প্ৰদান কৰা হয়?",
+    "options": [
+      "The Assam Government",
+      "The Indian Government",
+      "The UNESCO",
+      "The International Science Congress"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "question": "ভাৰতে ৰাষ্ট্ৰসংঘ কিমান চনত সদস্য ৰাষ্ট্ৰ হিচাপে যোগদান কৰিছিল?",
+    "options": [
+      "১৯৪৫ চনত",
+      "১৯৫৪ চনত",
+      "১৯৫৬ চনত",
+      "১৯৪৭ চনত"
+    ],
+    "correctAnswer": 0
+  },
+  {
+    "question": "২৯ জানুৱাৰী দিনটো কি দিৱস হিচাপে পালন কৰা হয়?",
+    "options": [
+      "হিমাচল প্ৰদেশ দিৱস",
+      "অসম গাওঁ আৰক্ষী দিৱস",
+      "বিশ্ব জলাশয় দিৱস",
+      "ৰাষ্ট্ৰীয় পৰ্যটন দিৱস"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "question": "কছাৰী সকলৰ প্ৰথম ৰাজধানী ক’ত আছিল?",
+    "options": [
+      "তেজপুৰ",
+      "শোণিতপুৰ",
+      "ডিমাপুৰ",
+      "কামৰূপ"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "question": "অসমৰ প্ৰথম কৃষক বিদ্ৰোহ কোনটো?",
+    "options": [
+      "কৃষক মুক্তি সংগ্ৰাম সমিতিৰ আন্দোলন",
+      "ৰঙীয়াৰ কৃষক বিদ্ৰোহ",
+      "পথৰুঘাটৰ ৰণ",
+      "ফুলগুৰিৰ ধোৱা"
+    ],
+    "correctAnswer": 3
+  },
+  {
+    "question": "অসমৰ প্ৰথম আৰু একমাত্ৰ মহিলা মুখ্যমন্ত্ৰীৰ নাম হৈছে",
+    "options": [
+      "নলিনীবালা দেৱী",
+      "চৈয়দা হুচনাৰা টাইমূৰ",
+      "অনুৰাধা শৰ্মা ",
+      "চৈয়দা আনোৱাৰা টাইমূৰ"
+    ],
+    "correctAnswer": 3
+  }
+];
+            quizQuestions = json;
+            startButton.style.display = 'none';
+            // Now that the quiz questions are loaded, show the first question
+            showNextQuestion();
+}
+
+
+                  
+function showNextQuestion() {
+  clearInterval(countdown); // Remove previous timer
+  if (currentQuestionIndex < quizQuestions.length) {
+    const currentQuestion = quizQuestions[currentQuestionIndex];
+    questionElement.textContent = currentQuestion.question;
+    optionsElement.innerHTML = '';
+    currentQuestion.options.forEach((option, index) => {
+      const button = document.createElement('button');
+      button.textContent = option;
+      button.classList.add('btn', 'btn-block', 'option');
+      button.style.marginBottom = '10px'; 
+      if (document.body.classList.contains('dark-mode')) {
+  button.classList.add('btn-light-dark');
+} else {
+  button.classList.add('btn-light');
+}
+      // Adjust margin if needed
+      optionsElement.appendChild(button);
+      button.addEventListener('click', () => checkAnswer(index));
+    });
+    answerElement.textContent = ''; // Clear previous answer
+    startTimer(); // Start timer right after loading the question
+    optionSelected = false; // Reset option selected flag
+  } else {
+    endQuiz();
+  }
+}
+
+function checkAnswer(selectedOption) {
+  if (!optionSelected) { // Check if an option has been selected
+    optionSelected = true; // Set option selected flag to true
+    
+    const correctAnswerIndex = quizQuestions[currentQuestionIndex].correctAnswer;
+    const correctOptionButton = optionsElement.children[correctAnswerIndex];
+    
+    // Disable all options
+    for (let i = 0; i < optionsElement.children.length; i++) {
+      optionsElement.children[i].setAttribute('disabled', true);
+    }
+    
+    if (selectedOption === correctAnswerIndex) {
+      // Handle correct answer
+      score++;
+      scoreTextElement.textContent = `Score: ${score}/${quizQuestions.length}`;
+      scoreTextElement.style.color = 'green';
+      optionsElement.children[selectedOption].style.backgroundColor = 'darkgreen';
+    } else {
+      // Handle wrong answer
+      scoreTextElement.textContent = `Score: ${score}/${quizQuestions.length}`;
+      optionsElement.classList.add('shake-wrong'); // Add shake effect class
+      optionsElement.children[selectedOption].style.backgroundColor = 'darkred';
+      const correctAnswer = quizQuestions[currentQuestionIndex].options[correctAnswerIndex];
+      answerElement.textContent = `Correct answer: ${correctAnswer}`;
+      answerElement.style.color = 'lightgreen';
+      setTimeout(() => {
+        optionsElement.classList.remove('shake-wrong');
+      }, 1000);
+    
+    }
+    
+    // Wait for a few seconds before moving to the next question
+    setTimeout(() => {
+      // Move to the next question
+      currentQuestionIndex++;
+      showNextQuestion();
+    }, 3000); // 3000 milliseconds = 3 seconds
+  }
+}
+
+function startTimer() {
+  timeLeftInSeconds = 15;
+  updateTimerDisplay(timeLeftInSeconds);
+  countdown = setInterval(() => {
+    if (timeLeftInSeconds <= 0 || currentQuestionIndex >= quizQuestions.length) {
+      clearInterval(countdown);
+      showNextQuestion();
+    } else {
+      timeLeftInSeconds--;
+      updateTimerDisplay(timeLeftInSeconds);
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay(timeLeft) {
+  timerTextElement.textContent = timeLeft;
+}
+ 
+
+function endQuiz() {
+  // Hide options and timer
+  optionsElement.style.display = 'none';
+  document.querySelector('.timer-container').style.display = 'none';
+  
+  // Calculate number of correct, wrong, and skipped questions
+  const correctAnswers = score;
+  const wrongAnswers = quizQuestions.length - correctAnswers;
+  const skippedQuestions = currentQuestionIndex - score;
+
+  // Show score and answers
+  questionElement.textContent = "Quiz Finished!";
+  answerElement.innerHTML = `Correct Answers: ${correctAnswers} <br> Wrong Answers: ${wrongAnswers} <br> Skipped Questions: ${skippedQuestions}`;
+  retryButton.style.display = 'block'; // Show retry button
+}
+
+function retryQuiz() {
+  // Reset variables
+  currentQuestionIndex = 0;
+  score = 0;
+  timeLeftInSeconds = 15;
+  optionSelected = false;
+  
+  // Reset UI
+  optionsElement.style.display = 'block'; // Show options
+  document.querySelector('.timer-container').style.display = 'block'; // Show timer
+  retryButton.style.display = 'none'; // Hide retry button
+  showNextQuestion(); // Restart quiz
+}
+</script>
+</body>
+</html>
