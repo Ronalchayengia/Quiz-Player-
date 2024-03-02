@@ -54,8 +54,6 @@ Ensure that the JSON file follows this structure for the quiz player to load the
 
 ## Credits
 
-This quiz player was developed with love by [Your Name]. Please do not remove this credit when posting on GitHub.
+This quiz player was developed with ♥️ by Ronal. Please do not remove this credit when posting on GitHub.
 
 ---
-
-Feel free to customize the README with additional information, such as installation instructions or any other relevant details about your project.
