@@ -16,7 +16,7 @@ A simple quiz player built using Bootstrap that loads quiz questions from a JSON
 1. Clone the repository to your local machine:
 
    ```bash
-   git clone https://github.com/Ronalchayengia/Quiz-Player.git
+   git clone https://github.com/spideyX99/Quiz-Player.git
    ```
 
 2. Navigate to the project directory:
